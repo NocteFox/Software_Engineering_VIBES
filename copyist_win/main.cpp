@@ -1,4 +1,4 @@
-#include <windows.h>
+    #include <windows.h>
 #include <stdio.h>
 #include <string.h>
 #include <shlwapi.h>
@@ -27,7 +27,7 @@ int main() {
 
     do {
         //Ќе будем копировать директории и не будем копировать скрытые файлы
-        //«десь используетс€ побитовое сложение, об этом ниже
+        //«десь используетс€ побитовое сложение дл€ вычлени€ состо€ни€ конкретного атрибута
         if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
             !(findData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) {
 
