@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1772378190 source:c:\rhtu\os\copyist_win\copyist\main.cpp
+	<windows.h>
+	<stdio.h>
+	<string.h>
+	<shlwapi.h>
+
