@@ -7,7 +7,6 @@
 #include <errno.h>
 
 int main() {
-    //структура, которая будет содержать информацию о найденных файлах
     struct dirent *entry;
     struct stat file_stat;
     //Дескриптор (уникальный идентификатор) поиска
@@ -37,7 +36,7 @@ int main() {
     strcpy(currentFileName, fileName);
 
     while ((entry = readdir(dp)) != NULL) {
-        //Не будем копировать директории и не будем копировать скрытые файлы
+        //Пропускаем текущую и родительскую директории
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
             continue;
         }
@@ -47,31 +46,40 @@ int main() {
             continue;
         }
 
-        //Проверяем, что это не директория и не скрытый файл
+        //Копируем только обычные файлы (не директории) и не скрытые
         if (!S_ISDIR(file_stat.st_mode) && entry->d_name[0] != '.') {
 
-            //Так же не будем копировать уже скопированные файлы
+            //Пропускаем уже скопированные файлы
             if (strncmp(entry->d_name, "copy_", 5) == 0) {
                 continue;
             }
 
-            //И не будем копировать текущий исполняемый файл
+            //Пропускаем текущий исполняемый файл
             if (strcmp(entry->d_name, currentFileName) == 0) {
                 continue;
             }
 
-            //создаем новое имя файла, и пытаемся создать с ним копию
+            //Создаем новое имя для копии
             char newName[4096];
             snprintf(newName, sizeof(newName), "copy_%s", entry->d_name);
 
-            //FALSE не позволит перезаписать файл (используем "xb" - эксклюзивное создание)
+            //Проверяем, не существует ли уже файл с таким именем (чтобы не перезаписать)
             FILE *src = fopen(entry->d_name, "rb");
             if (src == NULL) {
                 printf("Failed to open source: %s\n", entry->d_name);
                 continue;
             }
 
-            FILE *dst = fopen(newName, "xb"); // 'x' - не перезаписывать существующий файл
+            FILE *test = fopen(newName, "rb");
+            if (test != NULL) {
+                printf("Destination already exists: %s\n", newName);
+                fclose(test);
+                fclose(src);
+                continue;
+            }
+
+            //Создаем файл для записи копии
+            FILE *dst = fopen(newName, "wb");
             if (dst == NULL) {
                 printf("Failed to create destination: %s (error: %s)\n",
                        newName, strerror(errno));
