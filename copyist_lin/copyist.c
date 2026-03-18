@@ -19,7 +19,7 @@ int main() {
     char currentModule[4096];
     char currentFileName[4096];
 
-    // �������� ������ ����
+    // Тестовый комметарий
     ssize_t len = readlink("/proc/self/exe", currentModule, sizeof(currentModule) - 1);
     if (len != -1) {
         currentModule[len] = '\0';
